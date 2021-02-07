@@ -5,27 +5,29 @@ export var Result;
     Result[Result["LOSS"] = 2] = "LOSS";
     Result[Result["TIE"] = 3] = "TIE";
 })(Result || (Result = {}));
-var Values;
-(function (Values) {
-    Values[Values["HIGHCARD"] = 1] = "HIGHCARD";
-    Values[Values["PAIR"] = 2] = "PAIR";
-    Values[Values["TWO_PAIRS"] = 3] = "TWO_PAIRS";
-    Values[Values["THREE_OF_A_KIND"] = 4] = "THREE_OF_A_KIND";
-    Values[Values["STRAIGHT"] = 5] = "STRAIGHT";
-    Values[Values["FLUSH"] = 6] = "FLUSH";
-    Values[Values["FULL_HOUSE"] = 7] = "FULL_HOUSE";
-    Values[Values["FOUR_OF_A_KIND"] = 8] = "FOUR_OF_A_KIND";
-    Values[Values["STRAIGHT_FLUSH"] = 9] = "STRAIGHT_FLUSH";
-    Values[Values["ROYAL_FLUSH"] = 10] = "ROYAL_FLUSH";
-})(Values || (Values = {}));
+var Hand;
+(function (Hand) {
+    Hand[Hand["HIGHCARD"] = 1] = "HIGHCARD";
+    Hand[Hand["PAIR"] = 2] = "PAIR";
+    Hand[Hand["TWO_PAIRS"] = 3] = "TWO_PAIRS";
+    Hand[Hand["THREE_OF_A_KIND"] = 4] = "THREE_OF_A_KIND";
+    Hand[Hand["STRAIGHT"] = 5] = "STRAIGHT";
+    Hand[Hand["FLUSH"] = 6] = "FLUSH";
+    Hand[Hand["FULL_HOUSE"] = 7] = "FULL_HOUSE";
+    Hand[Hand["FOUR_OF_A_KIND"] = 8] = "FOUR_OF_A_KIND";
+    Hand[Hand["STRAIGHT_FLUSH"] = 9] = "STRAIGHT_FLUSH";
+    Hand[Hand["ROYAL_FLUSH"] = 10] = "ROYAL_FLUSH";
+})(Hand || (Hand = {}));
 export default class PokerHand {
     constructor(hand) {
         this.flush = false;
         this.straight = false;
         this.pairs = [];
         const sortedCards = this.sortCards(hand);
+        this.highCard = sortedCards[-2];
         this.generateHash(sortedCards);
         this.checkIfStraight(sortedCards);
+        this.hand = this.returnBestHand();
     }
     get isFlushHand() {
         return this.flush;
@@ -41,6 +43,9 @@ export default class PokerHand {
     }
     get hasPairs() {
         return this.pairs;
+    }
+    get handValue() {
+        return this.hand;
     }
     sortCards(hand) {
         return hand
@@ -97,7 +102,44 @@ export default class PokerHand {
             .join('');
         this.straight = sequence.indexOf(handSequence) > -1;
     }
-    compareWith() {
+    returnBestHand() {
+        if (this.flush && this.straight) {
+            if (this.highCard === 'A') {
+                return Hand.ROYAL_FLUSH;
+            }
+            return Hand.STRAIGHT_FLUSH;
+        }
+        else if (this.fourOfAKind) {
+            return Hand.FOUR_OF_A_KIND;
+        }
+        else if (this.threeOfAKind && this.pairs.length) {
+            return Hand.FULL_HOUSE;
+        }
+        else if (this.flush) {
+            return Hand.FLUSH;
+        }
+        else if (this.straight) {
+            return Hand.STRAIGHT;
+        }
+        else if (this.threeOfAKind) {
+            return Hand.THREE_OF_A_KIND;
+        }
+        else if (this.pairs.length) {
+            if (this.pairs.length === 2) {
+                return Hand.TWO_PAIRS;
+            }
+            return Hand.PAIR;
+        }
+        return Hand.HIGHCARD;
+    }
+    compareWith(hand) {
+        const oppositionHand = hand.handValue;
+        if (this.hand > oppositionHand) {
+            return Result.WIN;
+        }
+        if (this.hand < oppositionHand) {
+            return Result.LOSS;
+        }
         return Result.TIE;
     }
 }

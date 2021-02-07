@@ -62,6 +62,13 @@ describe('PokerHand', () => {
 		});
 	});
 
+	describe('evaluates correct hand', () => {
+		it('returns an array of card numbers that have pair', () => {
+			const pairs = new PokerHand('5D 9H 5S 9C 4H');
+			expect(pairs.hasPairs).toEqual([5, 9]);
+		});
+	});
+
 	describe('compareWith()', () => {
 
 		it(`ties`, () => {

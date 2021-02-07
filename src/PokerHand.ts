@@ -6,7 +6,7 @@ export enum Result {
 	TIE = 3
 }
 
-enum Values {
+enum Hand {
 	HIGHCARD = 1,
 	PAIR = 2,
 	TWO_PAIRS = 3,
@@ -25,11 +25,15 @@ export default class PokerHand {
 	private fourOfAKind: number | undefined;
 	private threeOfAKind: number | undefined;
 	private pairs: number[] = []; 
- 
+	private highCard: string | undefined;
+	private hand: Hand;
+
 	constructor(hand: string) {
 		const sortedCards = this.sortCards(hand);
+		this.highCard = sortedCards[-2];
 		this.generateHash(sortedCards);
 		this.checkIfStraight(sortedCards);
+		this.hand = this.returnBestHand();
 	}
 
 	get isFlushHand(): boolean | undefined {
@@ -50,6 +54,10 @@ export default class PokerHand {
 
 	get hasPairs(): number[] | undefined {
 		return this.pairs;
+	}
+
+	get handValue(): Hand {
+		return this.hand;
 	}
 
 	private sortCards(hand: string): string {
@@ -113,7 +121,39 @@ export default class PokerHand {
 		this.straight = sequence.indexOf(handSequence) > -1;
 	}
 
-	public compareWith(): Result {
+	private returnBestHand(): Hand {
+		if(this.flush && this.straight) {
+			if(this.highCard === 'A') {
+				return Hand.ROYAL_FLUSH;
+			}
+			return Hand.STRAIGHT_FLUSH; 
+		} else if(this.fourOfAKind) {
+			return Hand.FOUR_OF_A_KIND;
+		} else if(this.threeOfAKind && this.pairs.length) {
+			return Hand.FULL_HOUSE;
+		} else if(this.flush) {
+			return Hand.FLUSH;
+		} else if(this.straight) {
+			return Hand.STRAIGHT;
+		} else if(this.threeOfAKind) {
+			return Hand.THREE_OF_A_KIND; 
+		} else if(this.pairs.length) {
+			if(this.pairs.length === 2) {
+				return Hand.TWO_PAIRS;
+			}
+			return Hand.PAIR
+		}
+		return Hand.HIGHCARD;
+	}
+
+	public compareWith(hand: PokerHand): Result {
+		const oppositionHand = hand.handValue;
+		if(this.hand > oppositionHand) {
+			return Result.WIN;
+		}
+		if(this.hand < oppositionHand) {
+			return Result.LOSS;
+		}
 		return Result.TIE;
 	}
 }
