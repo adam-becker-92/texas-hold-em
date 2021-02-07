@@ -1,15 +1,25 @@
-export class PokerHand {
-
-	compareWith() {
-		return Result.TIE;
-	}
-
+export default class PokerHand {
+    constructor(hand) {
+        this.hand = hand;
+    }
+    isFlush() {
+        const hash = {};
+        const suits = this.hand.split(' ').map(card => card[1]);
+        suits.forEach((suit) => {
+            if (!hash[suit]) {
+                hash[suit] = true;
+            }
+        });
+        return Object.keys(hash).length === 1;
+    }
+    compareWith() {
+        console.log(Result.TIE);
+        return Result.TIE;
+    }
 }
-
-export const Result = {
-	WIN: 1,
-	LOSS: 2,
-	TIE: 3
-};
-
-export default PokerHand;
+export var Result;
+(function (Result) {
+    Result[Result["WIN"] = 1] = "WIN";
+    Result[Result["LOSS"] = 2] = "LOSS";
+    Result[Result["TIE"] = 3] = "TIE";
+})(Result || (Result = {}));

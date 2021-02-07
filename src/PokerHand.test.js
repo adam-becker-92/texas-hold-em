@@ -2,6 +2,18 @@ import PokerHand, { Result } from './PokerHand.js';
 
 describe('PokerHand', () => {
 
+	describe('isFlush()', () => {
+		it('returns true if flush', () => {
+			const flush = new PokerHand('2S 4S 6S 8S 9S');
+			expect(flush.isFlush()).toBe(true);
+		});
+
+		it('returns flase if not a flush', () => {
+			const notFlush = new PokerHand('3C 5C 6H 8H 9S');
+			expect(notFlush.isFlush()).toBe(false);
+		});
+	});
+
 	describe('compareWith()', () => {
 
 		it(`ties`, () => {

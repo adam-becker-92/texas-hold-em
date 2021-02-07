@@ -4,19 +4,24 @@
   "description": "Poker hand comparison",
   "main": "src/pokerhand.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "tsc": "tsc --watch"
   },
+  "type": "module",
   "keywords": [
     "poker",
     "texas",
     "holdem"
-	],
-	"private": true,
+  ],
+  "private": true,
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-jest": "^23.6.0",
     "babel-preset-env": "^1.7.0",
     "jest": "^23.6.0",
     "regenerator-runtime": "^0.12.1"
+  },
+  "dependencies": {
+    "typescript": "^4.1.3"
   }
 }
