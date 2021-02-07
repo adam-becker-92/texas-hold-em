@@ -1,16 +1,19 @@
 export default class PokerHand {
     constructor(hand) {
-        this.hand = hand;
+        this.checkIfFlush(hand);
     }
-    isFlush() {
+    get isFlushHand() {
+        return this.flush;
+    }
+    checkIfFlush(hand) {
         const hash = {};
-        const suits = this.hand.split(' ').map(card => card[1]);
+        const suits = hand.split(' ').map(card => card[1]);
         suits.forEach((suit) => {
             if (!hash[suit]) {
                 hash[suit] = true;
             }
         });
-        return Object.keys(hash).length === 1;
+        this.flush = Object.keys(hash).length === 1;
     }
     compareWith() {
         console.log(Result.TIE);
