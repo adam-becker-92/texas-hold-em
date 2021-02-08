@@ -25,12 +25,14 @@ export default class PokerHand {
 	private fourOfAKind: number | undefined;
 	private threeOfAKind: number | undefined;
 	private pairs: number[] = []; 
-	private highCard: string | undefined;
+	private highCard: string = '';
 	private hand: Hand;
+	public sorted: string | undefined;
 
 	constructor(hand: string) {
 		const sortedCards = this.sortCards(hand);
-		this.highCard = sortedCards[-2];
+		this.sorted = sortedCards;
+		this.highCard = this.getHighCard(sortedCards);
 		this.generateHash(sortedCards);
 		this.checkIfStraight(sortedCards);
 		this.hand = this.returnBestHand();
@@ -60,6 +62,11 @@ export default class PokerHand {
 		return this.hand;
 	}
 
+	private getHighCard(hand: string): string {
+		const highestCard = hand.split(' ');
+		return highestCard[highestCard.length - 1];
+	}
+
 	private sortCards(hand: string): string {
 		return hand
 			.split(' ')
@@ -80,7 +87,7 @@ export default class PokerHand {
 		const numberHash = <{ [key: string]: number }>{};
 		const cards = hand
 			.split(' ')
-			.map(card => [card[0], card[1]]);
+			.map(card => [card.slice(0, -1), card.slice(-1)]);
 
 		cards.forEach((card: string[]) => {
 			const [num, suit] = card;
@@ -94,12 +101,11 @@ export default class PokerHand {
 				numberHash[num] = 1;
 			}
 		});
-
 		this.flush = Object.keys(flushHash).length === 1;
 
 		Object.keys(numberHash).forEach((number) => {
 			const count = numberHash[number];
-			const num = parseInt(number);
+			const num = cardWeight(number);
 			if(count === 4) {
 				this.fourOfAKind = num;
 			}
@@ -114,7 +120,7 @@ export default class PokerHand {
 
 	private checkIfStraight(hand: string): void {
 		const sequence = '2345678910JQKA' 
-		const numbers = hand.split(' ').map(card => card[0]);
+		const numbers = hand.split(' ').map(card => card.slice(0, -1));
 		const handSequence = numbers
 			.sort((a, b) => parseInt(a) - parseInt(b))
 			.join('');
@@ -123,7 +129,7 @@ export default class PokerHand {
 
 	private returnBestHand(): Hand {
 		if(this.flush && this.straight) {
-			if(this.highCard === 'A') {
+			if(this.highCard.indexOf('A') > -1) {
 				return Hand.ROYAL_FLUSH;
 			}
 			return Hand.STRAIGHT_FLUSH; 

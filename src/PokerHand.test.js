@@ -69,14 +69,38 @@ describe('PokerHand', () => {
 		});
 	});
 
-	describe('compareWith()', () => {
+	describe('compare', () => {
 
-		it(`ties`, () => {
+		it(`straight flush loses to royal flush`, () => {
 
-			const hand1 = new PokerHand('AC 4S 5S 8C AH');
-			const hand2 = new PokerHand('4S 5S 8C AS AD');
+			const straightFlush = new PokerHand('3S 6S 4S 7S 5S');
+			const royalFlush = new PokerHand('AH QH JH 10H KH');
+			expect(straightFlush.compareWith(royalFlush)).toBe(Result.LOSS);
 
-			expect(hand1.compareWith(hand2)).toBe(Result.TIE);
+		});
+
+		it(`four of a kind beats full house`, () => {
+
+			const fourOfAKind = new PokerHand('4C 4S 5S 4D 4H');
+			const fullHouse = new PokerHand('KS KC KD 7S 7D');
+
+			expect(fourOfAKind.compareWith(fullHouse)).toBe(Result.WIN);
+
+		});
+
+		it(`straight loses to flush`, () => {
+
+			const straight = new PokerHand('2C 3S 5S 4C 6H');
+			const flush = new PokerHand('4S 5S 8S AS AS');
+
+			expect(straight.compareWith(flush)).toBe(Result.LOSS);
+
+		});
+
+		it(`three of a kind beats two pair`, () => {
+			const threeOfAKind = new PokerHand('AC AS 5S 8C AH');
+			const twoPair = new PokerHand('4S 5S 4C AS 5D');
+			expect(threeOfAKind.compareWith(twoPair)).toBe(Result.WIN);
 
 		});
 
